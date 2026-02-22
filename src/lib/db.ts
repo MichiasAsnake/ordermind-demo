@@ -10,7 +10,11 @@ const globalForDb = globalThis as unknown as {
     sqlite: ReturnType<typeof Database> | undefined;
 };
 
-const sqlite = globalForDb.sqlite ?? new Database(DB_PATH);
+const isProduction = process.env.NODE_ENV === "production";
+const sqlite = globalForDb.sqlite ?? new Database(DB_PATH, {
+    // Vercel's filesystem is read-only after deploy — readonly avoids WAL write errors
+    readonly: isProduction,
+});
 
 if (process.env.NODE_ENV !== "production") {
     globalForDb.sqlite = sqlite;
