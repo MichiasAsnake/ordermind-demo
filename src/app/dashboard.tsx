@@ -282,6 +282,38 @@ function AllOrdersModal({ open, onClose }: { open: boolean; onClose: () => void 
     );
 }
 
+// ─── Message Renderer (parses markdown links into clickable chips) ────────────
+
+function MessageRenderer({ content }: { content: string }) {
+    // Split on markdown links: [label](url)
+    const parts = content.split(/(\[[^\]]+\]\([^)]+\))/g);
+    return (
+        <>
+            {parts.map((part, i) => {
+                const match = part.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+                if (match) {
+                    const [, label, href] = match;
+                    const isOrderLink = href.startsWith("/orders/");
+                    if (isOrderLink) {
+                        return (
+                            <a
+                                key={i}
+                                href={href}
+                                className="inline-flex items-center gap-1 px-2 py-0.5 mx-0.5 rounded-md bg-indigo-50 text-indigo-700 border border-indigo-200 font-mono text-[12px] font-semibold hover:bg-indigo-100 transition-colors no-underline"
+                            >
+                                {label} <span className="text-indigo-400 text-[10px]">↗</span>
+                            </a>
+                        );
+                    }
+                    return <a key={i} href={href} className="underline text-indigo-600 hover:text-indigo-800 transition-colors">{label}</a>;
+                }
+                // Render plain text segments, preserving newlines
+                return <span key={i}>{part}</span>;
+            })}
+        </>
+    );
+}
+
 // ─── Chat Panel ───────────────────────────────────────────────────────────────
 
 const SUGGESTED = [
@@ -371,7 +403,10 @@ function ChatPanel() {
                                 ? "bg-gray-900 text-white rounded-br-md"
                                 : "bg-gray-50 text-gray-800 rounded-bl-md border border-gray-200"
                                 }`}>
-                                {m.content}
+                                {m.role === "assistant"
+                                    ? <MessageRenderer content={m.content} />
+                                    : m.content
+                                }
                             </div>
                         </div>
                     ))}

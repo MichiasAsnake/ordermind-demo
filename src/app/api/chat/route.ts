@@ -36,8 +36,8 @@ function buildContext(): string {
 
     // Top risk issues
     const risk = computeRisk();
-    const topIssues = risk.issues.slice(0, 10).map(i =>
-        `- ${i.jobNumber} | ${i.customer} (${i.customerPriority}) | $${i.value.toFixed(0)} | ${i.priority.toUpperCase()} | ${i.reasons.join(", ")} | Ship: ${i.requestedShipDate}`
+    const topIssues = risk.issues.slice(0, 12).map(i =>
+        `- [${i.jobNumber}](/orders/${i.orderId}) | ${i.customer} (${i.customerPriority}) | $${i.value.toFixed(0)} | ${i.priority.toUpperCase()} | ${i.reasons.join(", ")} | Ship: ${i.requestedShipDate}`
     ).join("\n");
 
     return `
@@ -54,6 +54,10 @@ ${topIssues}
 You are OrderMind, an AI operations assistant for a print shop. You have access to real-time shop data above.
 Answer the operator's questions directly using this data. Be concise, specific, and action-oriented.
 Speak like a smart ops manager, not a chatbot. No fluff. If asked about an order detail not in context, say you can look it up.
+
+FORMATTING RULE: Whenever you mention a specific order, ALWAYS use markdown link format: [JB-XXXX](/orders/ID)
+For example, write [JB-4809](/orders/9) not just "JB-4809". The ID is the number shown in the order list above.
+Never mention order numbers as plain text — always as clickable links.
 `.trim();
 }
 
