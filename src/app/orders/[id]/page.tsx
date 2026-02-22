@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { ChatPanel } from "@/components/ChatPanel";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -313,6 +314,16 @@ export default function OrderPage() {
                     OrderMind · Diagnostic view · {order.jobNumber}
                 </footer>
             </main>
+
+            {/* Context-aware chat — knows which order we're looking at */}
+            <ChatPanel
+                suggestions={[
+                    `Why is ${order.jobNumber} flagged?`,
+                    `List all orders for ${customer.company}`,
+                    `What's the fastest ${order.jobNumber} could ship?`,
+                    `Has ${customer.company} had delays before?`,
+                ]}
+            />
         </div>
     );
 }
