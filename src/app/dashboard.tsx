@@ -316,9 +316,9 @@ export default function Dashboard() {
             <header className="border-b border-gray-200 bg-white sticky top-0 z-20">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-lg bg-gray-900 flex items-center justify-center text-sm font-bold text-white">OM</div>
+                        <img src="/logo.svg" alt="OrderMind logo" className="w-8 h-8" />
                         <div>
-                            <span className="font-bold text-gray-900 text-[15px] tracking-tight">OrderMind</span>
+                            <span className="font-bold text-[15px] tracking-tight" style={{ color: '#3D2C61' }}>OrderMind</span>
                             <span className="ml-2 text-[13px] text-gray-400 font-medium">— Shop Overview</span>
                         </div>
                     </div>

@@ -104,8 +104,8 @@ export default function OrderPage() {
                         <span className="text-gray-200">|</span>
                         <div className="flex items-center gap-2">
                             <Link href="/" className="flex items-center gap-2">
-                                <div className="w-7 h-7 rounded-lg bg-gray-900 flex items-center justify-center text-xs font-bold text-white">OM</div>
-                                <span className="font-bold text-gray-900 text-[14px]">OrderMind</span>
+                                <img src="/logo.svg" alt="OrderMind logo" className="w-7 h-7" />
+                                <span className="font-bold text-[14px]" style={{ color: '#3D2C61' }}>OrderMind</span>
                             </Link>
                         </div>
                     </div>
