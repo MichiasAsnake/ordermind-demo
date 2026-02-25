@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { ChatPanel } from "@/components/ChatPanel";
 
@@ -44,9 +44,40 @@ interface RiskSummary {
     issues: RiskIssue[];
 }
 
-interface ChatMessage {
-    role: "user" | "assistant";
-    content: string;
+interface SearchResult {
+    id: number;
+    jobNumber: string;
+    customer: string;
+    status: string;
+    requestedShipDate: string;
+    value: number;
+    daysInProduction: number;
+    isLate: boolean;
+    score: number;
+    reasons: string[];
+}
+
+interface SearchResponse {
+    query: string;
+    parser: "llm" | "heuristic";
+    parsed: {
+        customer: string | null;
+        statuses: string[];
+        lateOnly: boolean;
+        rushOnly: boolean;
+        minValue: number | null;
+        stalledProductionDays: number | null;
+        dateRange: "none" | "today" | "this_week" | "overdue";
+        sortBy: "risk" | "value" | "ship_date";
+        limit: number;
+    };
+    summary: {
+        total: number;
+        critical: number;
+        highValue: number;
+    };
+    explanation: string;
+    results: SearchResult[];
 }
 
 // ─── Helpers ─────────────────────────────────────────────────────────────────
@@ -160,16 +191,14 @@ function reasonTag(reasons: string[]): string | null {
 
 function AllOrdersModal({ open, onClose }: { open: boolean; onClose: () => void }) {
     const [data, setData] = useState<OrdersData | null>(null);
-    const [loadingOrders, setLoadingOrders] = useState(false);
     const [healthFilter, setHealthFilter] = useState<"all" | OrderEntry["health"]>("needs_attention");
 
     useEffect(() => {
         if (!open || data) return;
-        setLoadingOrders(true);
         fetch("/api/orders")
             .then(r => r.json())
-            .then(d => { setData(d); setLoadingOrders(false); })
-            .catch(() => setLoadingOrders(false));
+            .then(d => setData(d))
+            .catch(() => undefined);
     }, [open, data]);
 
     if (!open) return null;
@@ -232,7 +261,7 @@ function AllOrdersModal({ open, onClose }: { open: boolean; onClose: () => void 
                         <span>Job #</span><span>Customer</span><span>Status</span><span>Ship Date</span><span>Value</span><span>Health</span><span>Risk Reason</span>
                     </div>
 
-                    {loadingOrders ? (
+                    {!data ? (
                         <div className="divide-y divide-gray-100">
                             {Array.from({ length: 12 }).map((_, i) => (
                                 <div key={i} className="grid grid-cols-[1fr_1.6fr_1fr_1fr_0.9fr_1.1fr_1.3fr] gap-4 px-8 py-4 animate-pulse">
@@ -291,6 +320,10 @@ export default function Dashboard() {
     const [loading, setLoading] = useState(true);
     const [filter, setFilter] = useState<"all" | "critical" | "high" | "medium">("all");
     const [allOrdersOpen, setAllOrdersOpen] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
+    const [searchData, setSearchData] = useState<SearchResponse | null>(null);
+    const [searchLoading, setSearchLoading] = useState(false);
+    const [searchError, setSearchError] = useState<string | null>(null);
     const router = useRouter();
 
     useEffect(() => {
@@ -304,6 +337,34 @@ export default function Dashboard() {
         });
     }, []);
 
+    async function runSearch(e: FormEvent) {
+        e.preventDefault();
+        const query = searchQuery.trim();
+        if (!query) return;
+
+        setSearchLoading(true);
+        setSearchError(null);
+
+        try {
+            const res = await fetch("/api/search", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ query }),
+            });
+
+            if (!res.ok) {
+                throw new Error("Search request failed.");
+            }
+
+            const data = await res.json() as SearchResponse;
+            setSearchData(data);
+        } catch {
+            setSearchError("Search is temporarily unavailable. Please try again.");
+        } finally {
+            setSearchLoading(false);
+        }
+    }
+
     const filteredIssues = risk?.issues.filter(i => filter === "all" || i.priority === filter) ?? [];
 
     const today = new Date("2026-02-22");
@@ -314,15 +375,33 @@ export default function Dashboard() {
 
             {/* Header */}
             <header className="border-b border-gray-200 bg-white sticky top-0 z-20">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                        <img src="/logo.svg" alt="OrderMind logo" className="w-8 h-8" />
-                        <div>
-                            <span className="font-bold text-[15px] tracking-tight" style={{ color: '#3D2C61' }}>OrderMind</span>
-                            <span className="ml-2 text-[13px] text-gray-400 font-medium">— Shop Overview</span>
+                <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-3">
+                            <img src="/logo.svg" alt="OrderMind logo" className="w-8 h-8" />
+                            <div>
+                                <span className="font-bold text-[15px] tracking-tight" style={{ color: '#3D2C61' }}>OrderMind</span>
+                                <span className="ml-2 text-[13px] text-gray-400 font-medium">— Shop Overview</span>
+                            </div>
                         </div>
+                        <div className="text-[13px] text-gray-400">{dateLabel}</div>
                     </div>
-                    <div className="text-[13px] text-gray-400">{dateLabel}</div>
+
+                    <form onSubmit={runSearch} className="flex items-center gap-2">
+                        <input
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            placeholder="Search orders, customers, delays, risks…"
+                            className="flex-1 rounded-xl border border-gray-300 bg-white px-4 py-3 text-[14px] text-gray-700 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-300"
+                        />
+                        <button
+                            type="submit"
+                            disabled={searchLoading}
+                            className="rounded-xl bg-indigo-600 text-white text-[13px] font-semibold px-4 py-3 hover:bg-indigo-500 transition-colors disabled:bg-indigo-300"
+                        >
+                            {searchLoading ? "Searching..." : "Search"}
+                        </button>
+                    </form>
                 </div>
             </header>
 
@@ -381,6 +460,61 @@ export default function Dashboard() {
                                 <span className="text-[13px] text-gray-500 font-semibold">{risk.medium} Medium</span>
                             </div>
                         </div>
+                    </section>
+                )}
+
+                {searchData && (
+                    <section className="space-y-4">
+                        <div className="rounded-xl border border-indigo-100 bg-indigo-50/50 p-4">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
+                                <h2 className="text-[15px] font-bold text-indigo-900">Search Results</h2>
+                                <span className="text-[12px] text-indigo-700 font-medium uppercase tracking-wide">Parser: {searchData.parser}</span>
+                            </div>
+                            <p className="text-[13px] text-indigo-900 mt-1">{searchData.explanation}</p>
+                            <p className="text-[12px] text-indigo-700 mt-1">
+                                {searchData.summary.total} matches · {searchData.summary.critical} critical-score · {searchData.summary.highValue} high-value
+                            </p>
+                        </div>
+
+                        <div className="rounded-xl border border-gray-200 overflow-hidden bg-white shadow-sm">
+                            <div className="grid grid-cols-[1fr_1.6fr_1fr_1fr_0.9fr_1.2fr_1fr] gap-4 px-5 py-3 bg-gray-50 border-b border-gray-200 text-[11px] text-gray-400 font-semibold uppercase tracking-widest">
+                                <span>Job #</span><span>Customer</span><span>Status</span><span>Ship Date</span><span>Value</span><span>Signals</span><span>Score</span>
+                            </div>
+
+                            {searchData.results.length === 0 ? (
+                                <div className="px-5 py-10 text-center text-[13px] text-gray-400">
+                                    No matches. Try: orders stuck in production or orders for Warner Bros.
+                                </div>
+                            ) : (
+                                <div className="divide-y divide-gray-100 max-h-[420px] overflow-y-auto">
+                                    {searchData.results.map((order) => (
+                                        <div
+                                            key={order.id}
+                                            onClick={() => router.push(`/orders/${order.id}`)}
+                                            className="grid grid-cols-[1fr_1.6fr_1fr_1fr_0.9fr_1.2fr_1fr] gap-4 px-5 py-3.5 transition-colors hover:bg-gray-50 cursor-pointer"
+                                        >
+                                            <span className="text-[13px] font-mono font-semibold text-gray-800">{order.jobNumber}</span>
+                                            <span className="text-[13px] text-gray-900 truncate">{order.customer}</span>
+                                            <span className="text-[12px] text-gray-500">{order.status}</span>
+                                            <span className="text-[12px] text-gray-600">{order.requestedShipDate}</span>
+                                            <span className="text-[13px] font-semibold text-gray-900 tabular-nums">{fmt$$(order.value)}</span>
+                                            <div className="flex flex-wrap gap-1 items-center">
+                                                {order.reasons.length ? order.reasons.map((reason) => (
+                                                    <span key={reason} className="text-[10px] bg-gray-100 text-gray-500 px-2 py-0.5 rounded border border-gray-200">{reason.replace(/_/g, " ")}</span>
+                                                )) : <span className="text-[12px] text-gray-300">—</span>}
+                                            </div>
+                                            <span className="text-[13px] font-semibold text-indigo-700">{order.score.toFixed(2)}</span>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
+                        </div>
+                    </section>
+                )}
+
+                {searchError && (
+                    <section className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-[13px] text-red-700">
+                        {searchError}
                     </section>
                 )}
 
