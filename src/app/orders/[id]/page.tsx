@@ -104,8 +104,7 @@ export default function OrderPage() {
                         <span className="text-gray-200">|</span>
                         <div className="flex items-center gap-2">
                             <Link href="/" className="flex items-center gap-2">
-                                <img src="/synapto-logo.jpg" alt="SYNAPTO logo" className="w-7 h-7" />
-                                <span className="font-bold text-[14px]" style={{ color: '#3D2C61' }}>OrderMind</span>
+                                <img src="/new-logo.svg" alt="Logo" className="w-7 h-7" />
                             </Link>
                         </div>
                     </div>
@@ -311,7 +310,7 @@ export default function OrderPage() {
                 </section>
 
                 <footer className="text-center text-[12px] text-gray-300 pb-6">
-                    OrderMind · Diagnostic view · {order.jobNumber}
+                    Diagnostic view · {order.jobNumber}
                 </footer>
             </main>
 

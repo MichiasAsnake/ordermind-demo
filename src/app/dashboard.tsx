@@ -378,11 +378,7 @@ export default function Dashboard() {
                 <div className="max-w-7xl mx-auto px-6 py-4 space-y-4">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <img src="/synapto-logo.jpg" alt="SYNAPTO logo" className="w-8 h-8" />
-                            <div>
-                                <span className="font-bold text-[15px] tracking-tight" style={{ color: '#3D2C61' }}>OrderMind</span>
-                                <span className="ml-2 text-[13px] text-gray-400 font-medium">— Shop Overview</span>
-                            </div>
+                            <img src="/new-logo.svg" alt="Logo" className="w-8 h-8" />
                         </div>
                         <div className="text-[13px] text-gray-400">{dateLabel}</div>
                     </div>
@@ -634,7 +630,7 @@ export default function Dashboard() {
                 )}
 
                 <footer className="text-center text-[12px] text-gray-300 pb-6">
-                    OrderMind · {dateLabel}
+                    {dateLabel}
                 </footer>
             </main>
 
