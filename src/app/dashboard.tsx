@@ -460,8 +460,8 @@ export default function Dashboard() {
                 <div className="max-w-7xl mx-auto px-6 py-4 space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <img src="/new-logo.svg" alt="OrderMind logo" className="h-8 w-auto" />
-                            <div>
+                            <img src="/new-logo.svg" alt="OrderMind logo" className="h-6 w-auto mb-1" />
+                            <div className="mb-1">
                                 <span className="ml-2 text-[13px] text-neutral-400 font-medium">— Shop Overview</span>
                             </div>
                         </div>

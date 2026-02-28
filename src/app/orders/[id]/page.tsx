@@ -104,7 +104,7 @@ export default function OrderPage() {
                         <span className="text-neutral-200">|</span>
                         <div className="flex items-center gap-2">
                             <Link href="/" className="flex items-center gap-2">
-                                <img src="/new-logo.svg" alt="Logo" className="h-7 w-auto" />
+                                <img src="/new-logo.svg" alt="Logo" className="h-7 w-auto mb-1" />
                             </Link>
                         </div>
                     </div>
