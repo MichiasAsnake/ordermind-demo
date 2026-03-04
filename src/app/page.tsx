@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Dashboard from "./dashboard";
 
 export const metadata: Metadata = {
-  title: "OrderMind — AI Operations Assistant",
+  title: "Synapto — AI Operations Assistant",
   description: "Real-time shop health dashboard and risk intelligence for print shops",
 };
 

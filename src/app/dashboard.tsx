@@ -460,9 +460,9 @@ export default function Dashboard() {
                 <div className="max-w-7xl mx-auto px-6 py-4 space-y-3">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
-                            <img src="/new-logo.svg" alt="OrderMind logo" className="h-6 w-auto mb-1" />
+                            <img src="/synapto-text-logo.png" alt="Synapto Logo" className="h-6 w-auto" />
                             <div className="mb-1">
-                                <span className="ml-2 text-[13px] text-neutral-400 font-medium">— Shop Overview</span>
+                                <span className="text-[13px] text-neutral-400 font-medium">— Shop Overview</span>
                             </div>
                         </div>
                         <div className="text-[13px] text-neutral-400">{dateLabel}</div>
@@ -790,7 +790,7 @@ export default function Dashboard() {
                 )}
 
                 <footer className="text-center text-[12px] text-neutral-300 pb-6">
-                    OrderMind · {dateLabel}
+                    Synapto · {dateLabel}
                 </footer>
             </main>
 

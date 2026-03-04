@@ -104,7 +104,7 @@ export default function OrderPage() {
                         <span className="text-neutral-200">|</span>
                         <div className="flex items-center gap-2">
                             <Link href="/" className="flex items-center gap-2">
-                                <img src="/new-logo.svg" alt="Logo" className="h-7 w-auto mb-1" />
+                                <img src="/synapto-text-logo.png" alt="Synapto Logo" className="h-6 w-auto" />
                             </Link>
                         </div>
                     </div>
@@ -310,7 +310,7 @@ export default function OrderPage() {
                 </section>
 
                 <footer className="text-center text-[12px] text-neutral-300 pb-6">
-                    OrderMind · Diagnostic view · {order.jobNumber}
+                    Synapto · Diagnostic view · {order.jobNumber}
                 </footer>
             </main>
 
@@ -323,6 +323,6 @@ export default function OrderPage() {
                     `Has ${customer.company} had delays before?`,
                 ]}
             />
-        </div>
+        </div >
     );
 }

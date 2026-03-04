@@ -1,5 +1,5 @@
 /**
- * OrderMind Demo — Seed Script
+ * Synapto Demo — Seed Script
  *
  * Generates ~200 dramatic orders across 50 customers with embedded
  * risk scenarios to power the risk engine and dashboard demo.
@@ -233,7 +233,7 @@ function wipeData() {
 // ─── Main Seed ────────────────────────────────────────────────────────────────
 
 function seed() {
-    console.log("🌱 Seeding OrderMind demo database...\n");
+    console.log("🌱 Seeding Synapto demo database...\n");
 
     db.prepare("PRAGMA foreign_keys = ON").run();
     wipeData();

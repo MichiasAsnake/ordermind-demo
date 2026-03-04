@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "OrderMind — AI Operations Assistant",
+  title: "Synapto — AI Operations Assistant",
   description: "Proactive daily shop health monitoring for print operations. Know what needs attention before your customers do.",
   icons: { icon: "/icon.svg" },
 };

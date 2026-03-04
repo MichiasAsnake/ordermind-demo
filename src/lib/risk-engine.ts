@@ -1,5 +1,5 @@
 /**
- * OrderMind Risk Logic Engine
+ * Synapto Risk Logic Engine
  *
  * 5-tier prioritized risk detection for the demo dashboard.
  * Each order is evaluated against all tiers and assigned a priority level.
